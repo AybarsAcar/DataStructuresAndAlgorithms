@@ -1,6 +1,7 @@
 package dev.aybarsacar.datastructures.trees.bst;
 
 import dev.aybarsacar.datastructures.trees.utils.TreePrinter;
+import dev.aybarsacar.datastructures.trees.utils.TreeTraversalOrder;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.Stack;
  * where the smaller value is stored as the left child of the parent
  * and the greater value is stored as the right child of the parent
  * this implementation does not allow duplicate values
+ * TODO: implement tree traversals
  */
 public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
 {
@@ -265,6 +267,31 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
     root = null;
   }
 
+  /**
+   * this methods returns an iterator for a given TreeTraversalOrder
+   * which we can traverse in four ways
+   *
+   * @param order - Tree Traversal
+   * @return - Iterator
+   */
+  public Iterator<T> traverse(TreeTraversalOrder order)
+  {
+    switch (order)
+    {
+      case PRE_ORDER:
+        return iterator();
+      case IN_ORDER:
+        return iterator();
+      case POST_ORDER:
+        return iterator();
+      case LEVEL_ORDER:
+        return iterator();
+      default:
+        return null;
+    }
+  }
+
+  //  TODO: implement the tree traversal algorithms
   @Override
   public Iterator<T> iterator()
   {

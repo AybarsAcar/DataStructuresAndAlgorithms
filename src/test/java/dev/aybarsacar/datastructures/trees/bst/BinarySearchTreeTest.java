@@ -1,6 +1,5 @@
-package dev.aybarsacar.datastructures.trees;
+package dev.aybarsacar.datastructures.trees.bst;
 
-import dev.aybarsacar.datastructures.trees.bst.BinarySearchTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

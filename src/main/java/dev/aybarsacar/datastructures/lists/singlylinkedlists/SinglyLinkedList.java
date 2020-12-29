@@ -1,14 +1,16 @@
 package dev.aybarsacar.datastructures.lists.singlylinkedlists;
 
+import java.util.Iterator;
+
 /**
  * Singly Linked List implementation for a Generic class
  */
-public class SinglyLinkedList<T>
+public class SinglyLinkedList<T> implements Iterable<T>
 {
-  private class Node<T>
+  private class Node
   {
     private final T data;
-    private Node<T> next;
+    private Node next;
 
     public Node(T data)
     {
@@ -20,12 +22,12 @@ public class SinglyLinkedList<T>
       return data;
     }
 
-    public Node<T> getNext()
+    public Node getNext()
     {
       return next;
     }
 
-    public void setNext(Node<T> next)
+    public void setNext(Node next)
     {
       this.next = next;
     }
@@ -37,7 +39,7 @@ public class SinglyLinkedList<T>
     }
   }
 
-  private Node<T> head;           // head of the singly linked list
+  private Node head;           // head of the singly linked list
   private int size;               // Size of the list, convenience variable
 
   public SinglyLinkedList()
@@ -45,13 +47,13 @@ public class SinglyLinkedList<T>
     size = 0;
   }
 
-  public SinglyLinkedList(Node<T> head)
+  public SinglyLinkedList(Node head)
   {
     this.head = head;
     size = 1;
   }
 
-  public Node<T> getHead()
+  public Node getHead()
   {
     return head;
   }
@@ -73,7 +75,7 @@ public class SinglyLinkedList<T>
    */
   public void add(T data)
   {
-    Node<T> nodeToAdd = new Node<>(data);
+    Node nodeToAdd = new Node(data);
     nodeToAdd.setNext(head);
     head = nodeToAdd;
     size++;
@@ -89,7 +91,7 @@ public class SinglyLinkedList<T>
   {
     if (isEmpty()) return null;
 
-    Node<T> nodeToRemove = head;
+    Node nodeToRemove = head;
 
     head = head.getNext();
     nodeToRemove.setNext(null);
@@ -111,8 +113,8 @@ public class SinglyLinkedList<T>
     if (isEmpty()) return false;
     if (head.getData() == value) remove();
 
-    Node<T> previous = head;
-    Node<T> current = head.getNext();
+    Node previous = head;
+    Node current = head.getNext();
 
     while (current != null)
     {
@@ -142,10 +144,10 @@ public class SinglyLinkedList<T>
 
     if (location == 0) return remove();
 
-    Node<T> previous = head;
+    Node previous = head;
     for (int i = 0; i < location - 1; i++) previous = previous.getNext();
 
-    Node<T> nodeToRemove = previous.getNext();
+    Node nodeToRemove = previous.getNext();
 
     previous.setNext(nodeToRemove.getNext());
     nodeToRemove.setNext(null);
@@ -163,16 +165,7 @@ public class SinglyLinkedList<T>
    */
   public boolean contains(T value)
   {
-    Node<T> current = head;
-    while (current != null)
-    {
-      if (current.getData() == value)
-      {
-        return true;
-      }
-      current = current.getNext();
-    }
-    return false;
+    return indexOf(value) != -1;
   }
 
   /**
@@ -182,18 +175,18 @@ public class SinglyLinkedList<T>
    * @param value
    * @return
    */
-  public int getItem(T value)
+  public int indexOf(T value)
   {
-    Node<T> current = head;
-    int location = 0;
+    Node current = head;
+    int index = 0;
     while (current != null)
     {
       if (current.getData() == value)
       {
-        return location;
+        return index;
       }
       current = current.getNext();
-      location++;
+      index++;
     }
     return -1;
   }
@@ -208,17 +201,61 @@ public class SinglyLinkedList<T>
   {
     if (location >= size) throw new IndexOutOfBoundsException();
 
-    Node<T> current = head;
+    Node current = head;
     for (int i = 0; i < location; i++) current = current.getNext();
 
     return current.getData();
+  }
+
+  /**
+   * turns the list into a primitive array
+   *
+   * @return an array of T
+   */
+  public T[] toArray()
+  {
+    @SuppressWarnings("unchecked")
+    T[] arr = (T[]) new Object[size];
+
+    Node current = head;
+    int index = 0;
+    while (current != null)
+    {
+      arr[index] = current.data;
+      index++;
+      current = current.getNext();
+    }
+    return arr;
+  }
+
+  @Override
+  public Iterator<T> iterator()
+  {
+    return new Iterator<T>()
+    {
+      Node current = head;
+
+      @Override
+      public boolean hasNext()
+      {
+        return current != null;
+      }
+
+      @Override
+      public T next()
+      {
+        T data = current.getData();
+        current = current.getNext();
+        return null;
+      }
+    };
   }
 
   @Override
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    Node<T> current = head;
+    Node current = head;
 
     sb.append("HEAD -> ");
 

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 public class SinglyLinkedListTest
 {
   SinglyLinkedList<String> list;
@@ -80,5 +82,17 @@ public class SinglyLinkedListTest
   public void getsAnItemByLocation()
   {
     Assertions.assertEquals(10, list2.get(2));
+  }
+
+  @Test
+  public void toArrayTest()
+  {
+    System.out.println(list2);
+
+    Object[] arr = list.toArray();
+    Object[] arr2 = list2.toArray();
+
+    System.out.println(Arrays.toString(arr));
+    System.out.println(Arrays.toString(arr2));
   }
 }

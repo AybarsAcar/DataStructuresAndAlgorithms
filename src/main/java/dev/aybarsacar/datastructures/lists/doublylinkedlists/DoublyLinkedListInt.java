@@ -7,7 +7,7 @@ public class DoublyLinkedListInt
 {
   private NodeDLL head;               // first node
   private NodeDLL tail;               // last node
-  private int size;                   // size of hte list
+  private int size;                   // size of the list
 
   public DoublyLinkedListInt()
   {
