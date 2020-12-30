@@ -1,8 +1,9 @@
 package dev.aybarsacar.datastructures.queue;
 
+import java.util.NoSuchElementException;
+
 /**
  * Queue implementation backed by an array
- * TODO: finish implementing
  */
 @SuppressWarnings("unchecked")
 public class ArrayQueue<T> implements Queue<T>
@@ -26,13 +27,57 @@ public class ArrayQueue<T> implements Queue<T>
   @Override
   public void offer(T elem)
   {
+    if (size() == queue.length - 1)
+    {
+      int numItems = size();
 
+//      increase the size of the array
+      T[] newArray = (T[]) new Object[queue.length * 2];
+
+//      when resizing unwrap the queue
+      System.arraycopy(queue, front, newArray, 0, queue.length - front);
+      System.arraycopy(queue, 0, newArray, queue.length - front, back);
+
+      queue = newArray;
+
+//      reset the front and back pointers
+      front = 0;
+      back = numItems;
+    }
+
+//    add the new element to the available position
+    queue[back] = elem;
+
+    if (back < queue.length)
+    {
+      back++;
+    }
+    else
+    {
+      back = 0;   // wrapped
+    }
   }
 
   @Override
   public T poll()
   {
-    return null;
+    if (front == back) throw new NoSuchElementException();
+
+    T itemToPoll = queue[front];
+    queue[front] = null;
+    front++;
+
+//    simple optimisation
+    if (front == back)
+    {
+      front = back = 0;
+    }
+    else if (front == queue.length)
+    {
+      front = 0;    // wrap it
+    }
+
+    return itemToPoll;
   }
 
   @Override
