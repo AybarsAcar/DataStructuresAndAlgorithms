@@ -1,7 +1,6 @@
 package dev.aybarsacar.datastructures.priorityqueue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * a min priority queue implementation using a binary heap
@@ -10,6 +9,10 @@ public class BinaryHeap<T extends Comparable<T>>
 {
   //  A dynamic list to store the binary head
   private List<T> heap = null;
+
+//  to store the values and the indices so searching will be O(1)
+//  and removal will be done in O(log(n))
+//  private Map<T, TreeSet<Integer>> map = new HashMap<>();
 
   public BinaryHeap()
   {
@@ -22,7 +25,8 @@ public class BinaryHeap<T extends Comparable<T>>
   }
 
   /**
-   * constructor to initialise the heap with a list of elems
+   * constructor to initialise the heap with an array of elements
+   * constructed in O(n) time
    *
    * @param elems
    */
@@ -41,6 +45,15 @@ public class BinaryHeap<T extends Comparable<T>>
   public boolean isEmpty()
   {
     return size() == 0;
+  }
+
+  public void clear()
+  {
+    for (int i = 0; i < size(); i++)
+    {
+      heap.set(i, null);
+    }
+//    map.clear();
   }
 
   public int size()
@@ -123,7 +136,7 @@ public class BinaryHeap<T extends Comparable<T>>
    */
   private void swim(int k)
   {
-//    Grab hte index of the next parent node WRT to k
+//    Grab the index of the next parent node WRT to k
     int parent = (k - 1) / 2;
 
 //    keep swimming while we have not reached the root and while we are less than our parent
@@ -149,9 +162,9 @@ public class BinaryHeap<T extends Comparable<T>>
     int heapSize = size();
     while (true)
     {
-      int left = 2 * k + 1;         // left node
-      int right = 2 * k + 2;        // right node
-      int smallest = left;          //Assume left is the smallest node of the two children
+      int left = 2 * k + 1;         // left child
+      int right = 2 * k + 2;        // right child
+      int smallest = left;          // Assume left is the smallest node of the two children
 
 //      Find which is smaller left or right
 //      if right is smaller set smallest to be right
@@ -231,7 +244,7 @@ public class BinaryHeap<T extends Comparable<T>>
 
     sink(i);
 
-//    if sink doesnt work try swim
+//    if sink doesn't (nothing happens with swim) work try swim
     if (heap.get(i).equals(elem)) swim(i);
 
     return nodeToRemove;

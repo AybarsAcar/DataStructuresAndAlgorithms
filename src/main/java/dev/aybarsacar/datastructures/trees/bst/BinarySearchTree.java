@@ -3,9 +3,7 @@ package dev.aybarsacar.datastructures.trees.bst;
 import dev.aybarsacar.datastructures.trees.utils.TreePrinter;
 import dev.aybarsacar.datastructures.trees.utils.TreeTraversalOrder;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Binary Search Tree implementation
@@ -13,9 +11,8 @@ import java.util.Stack;
  * where the smaller value is stored as the left child of the parent
  * and the greater value is stored as the right child of the parent
  * this implementation does not allow duplicate values
- * TODO: implement tree traversals
  */
-public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
+public class BinarySearchTree<T extends Comparable<T>>
 {
   /**
    * Node class that stores the data
@@ -77,6 +74,11 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
   public int size()
   {
     return nodeCount;
+  }
+
+  public boolean isEmpty()
+  {
+    return nodeCount == 0;
   }
 
   /**
@@ -141,14 +143,16 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
    */
   private Node insert(Node current, T value)
   {
-//    base case
+//    base case - found a leaf node to insert
     if (current == null) return new Node(value);
 
+    int comparison = value.compareTo(current.value);
+
 //    if value < current.value
-    if (value.compareTo(current.value) < 0) current.left = insert(current.left, value);
+    if (comparison < 0) current.left = insert(current.left, value);
 
 //    if value > current.value
-    else if (value.compareTo(current.value) > 0) current.right = insert(current.right, value);
+    else if (comparison > 0) current.right = insert(current.right, value);
 
     else return current; // value already exists, we will never hit this block
 
@@ -170,10 +174,10 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
   {
     if (node == null) return null;
 
-    int comparison = value.compareTo(node.value);
+    int comparator = value.compareTo(node.value);
 
-    if (comparison < 0) return find(node.left, value);
-    else if (comparison > 0) return find(node.right, value);
+    if (comparator < 0) return find(node.left, value);
+    else if (comparator > 0) return find(node.right, value);
     else return node.value;
   }
 
@@ -198,12 +202,12 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
   {
     if (current == null) return null;
 
-    int comparison = value.compareTo(current.value);
-    if (comparison < 0)
+    int comparator = value.compareTo(current.value);
+    if (comparator < 0)
     {
       current.left = remove(current.left, value);
     }
-    else if (comparison > 0)
+    else if (comparator > 0)
     {
       current.right = remove(current.right, value);
     }
@@ -268,6 +272,24 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
   }
 
   /**
+   * @return the height
+   */
+  public int height()
+  {
+    return height(root);
+  }
+
+  /**
+   * @param node - height of the node within the tree
+   * @return - the greater height of left or right subtree
+   */
+  private int height(Node node)
+  {
+    if (node == null) return 0;
+    return Math.max(height(node.right), height(node.left));
+  }
+
+  /**
    * this methods returns an iterator for a given TreeTraversalOrder
    * which we can traverse in four ways
    *
@@ -279,29 +301,72 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
     switch (order)
     {
       case PRE_ORDER:
-        return iterator();
+        return preOrderTraversal();
       case IN_ORDER:
-        return iterator();
+        return inOrderTraversal();
       case POST_ORDER:
-        return iterator();
+        return postOrderTraversal();
       case LEVEL_ORDER:
-        return iterator();
+        return levelOrderTraversal();
       default:
         return null;
     }
   }
 
-  //  TODO: implement the tree traversal algorithms
-  @Override
-  public Iterator<T> iterator()
+  /**
+   * returns an iterator to traverse the tree in pre order
+   *
+   * @return
+   */
+  private Iterator<T> preOrderTraversal()
   {
     final int expectedNodeCount = nodeCount;
     final Stack<Node> stack = new Stack<>();
     stack.push(root);
 
-    return new Iterator<T>()
+    return new Iterator<>()
     {
-      Node trav = root;
+      @Override
+      public boolean hasNext()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+        return root != null && !stack.isEmpty();
+      }
+
+      @Override
+      public T next()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+
+        Node node = stack.pop();
+        if (node.right != null) stack.push(node.right);
+        if (node.left != null) stack.push(node.left);
+
+        return node.value;
+      }
+
+      @Override
+      public void remove()
+      {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
+  /**
+   * returns an iterator to traverse the tree in in order
+   *
+   * @return
+   */
+  private Iterator<T> inOrderTraversal()
+  {
+    final int expectedNodeCount = nodeCount;
+    final Stack<Node> stack = new Stack<>();
+    stack.push(root);
+
+    return new Iterator<>()
+    {
+      Node current = root;
 
       @Override
       public boolean hasNext()
@@ -315,10 +380,10 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
       {
         if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
 
-        while (trav != null && trav.left != null)
+        while (current != null && current.left != null)
         {
-          stack.push(trav.left);
-          trav = trav.left;
+          stack.push(current.left);
+          current = current.left;
         }
 
         Node node = stack.pop();
@@ -326,8 +391,95 @@ public class BinarySearchTree<T extends Comparable<T>> implements Iterable<T>
         if (node.right != null)
         {
           stack.push(node.right);
-          trav = node.right;
+          current = node.right;
         }
+        return node.value;
+      }
+
+      @Override
+      public void remove()
+      {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
+  /**
+   * returns an iterator to traverse the tree in post order
+   *
+   * @return
+   */
+  private Iterator<T> postOrderTraversal()
+  {
+    final int expectedNodeCount = nodeCount;
+    final Stack<Node> stack1 = new Stack<>();
+    final Stack<Node> stack2 = new Stack<>();
+    stack1.push(root);
+
+    while (!stack1.isEmpty())
+    {
+      Node node = stack1.pop();
+      if (node != null)
+      {
+        stack2.push(node);
+        if (node.left != null) stack1.push(node.left);
+        if (node.right != null) stack1.push(node.right);
+      }
+    }
+
+    return new Iterator<>()
+    {
+      @Override
+      public boolean hasNext()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+        return root != null && !stack2.isEmpty();
+      }
+
+      @Override
+      public T next()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+
+        return stack2.pop().value;
+      }
+
+      @Override
+      public void remove()
+      {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
+  /**
+   * returns an iterator to traverse the tree in level order
+   *
+   * @return
+   */
+  private Iterator<T> levelOrderTraversal()
+  {
+    final int expectedNodeCount = nodeCount;
+    final Queue<Node> queue = new LinkedList<>();
+    queue.offer(root);
+
+    return new Iterator<>()
+    {
+      @Override
+      public boolean hasNext()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+        return root != null && !queue.isEmpty();
+      }
+
+      @Override
+      public T next()
+      {
+        if (expectedNodeCount != nodeCount) throw new ConcurrentModificationException();
+
+        Node node = queue.poll();
+        if (node.right != null) queue.offer(node.right);
+        if (node.left != null) queue.offer(node.left);
 
         return node.value;
       }
